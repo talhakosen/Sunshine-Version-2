@@ -36,8 +36,9 @@ public class DetailActivity extends ActionBarActivity {
             Bundle arguments = new Bundle();
             arguments.putParcelable(DetailFragment.DETAIL_URI, getIntent().getData());
 
-            DetailFragment fragment = new DetailFragment();
+            DetailFragment fragment = DetailFragment_.builder().build();
             fragment.setArguments(arguments);
+
 
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.weather_detail_container, fragment)

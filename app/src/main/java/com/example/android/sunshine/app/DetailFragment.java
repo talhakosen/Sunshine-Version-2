@@ -25,22 +25,53 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.ShareActionProvider;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.android.sunshine.app.data.WeatherContract;
 import com.example.android.sunshine.app.data.WeatherContract.WeatherEntry;
 
+import org.androidannotations.annotations.AfterInject;
+import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.ViewById;
+
 /**
  * A placeholder fragment containing a simple view.
  */
+@EFragment(R.layout.fragment_detail)
 public class DetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+
+    @ViewById
+    ImageView detail_icon;
+
+    @ViewById
+    TextView detail_date_textview;
+
+    @ViewById
+    TextView detail_day_textview;
+
+    @ViewById
+    TextView detail_forecast_textview;
+
+    @ViewById
+    TextView detail_high_textview;
+
+    @ViewById
+    TextView detail_low_textview;
+
+    @ViewById
+    TextView detail_humidity_textview;
+
+    @ViewById
+    TextView detail_wind_textview;
+
+    @ViewById
+    TextView detail_pressure_textview;
+
 
     private static final String LOG_TAG = DetailFragment.class.getSimpleName();
     static final String DETAIL_URI = "URI";
@@ -82,40 +113,24 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     public static final int COL_WEATHER_DEGREES = 8;
     public static final int COL_WEATHER_CONDITION_ID = 9;
 
-    private ImageView mIconView;
-    private TextView mFriendlyDateView;
-    private TextView mDateView;
-    private TextView mDescriptionView;
-    private TextView mHighTempView;
-    private TextView mLowTempView;
-    private TextView mHumidityView;
-    private TextView mWindView;
-    private TextView mPressureView;
-
     public DetailFragment() {
         setHasOptionsMenu(true);
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
 
+    @AfterInject
+    protected void init() {
+
+    }
+
+    @AfterViews
+    protected void initViews() {
         Bundle arguments = getArguments();
         if (arguments != null) {
             mUri = arguments.getParcelable(DetailFragment.DETAIL_URI);
         }
 
-        View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
-        mIconView = (ImageView) rootView.findViewById(R.id.detail_icon);
-        mDateView = (TextView) rootView.findViewById(R.id.detail_date_textview);
-        mFriendlyDateView = (TextView) rootView.findViewById(R.id.detail_day_textview);
-        mDescriptionView = (TextView) rootView.findViewById(R.id.detail_forecast_textview);
-        mHighTempView = (TextView) rootView.findViewById(R.id.detail_high_textview);
-        mLowTempView = (TextView) rootView.findViewById(R.id.detail_low_textview);
-        mHumidityView = (TextView) rootView.findViewById(R.id.detail_humidity_textview);
-        mWindView = (TextView) rootView.findViewById(R.id.detail_wind_textview);
-        mPressureView = (TextView) rootView.findViewById(R.id.detail_pressure_textview);
-        return rootView;
+        getLoaderManager().initLoader(DETAIL_LOADER, null, this);
     }
 
     @Override
@@ -141,12 +156,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         shareIntent.setType("text/plain");
         shareIntent.putExtra(Intent.EXTRA_TEXT, mForecast + FORECAST_SHARE_HASHTAG);
         return shareIntent;
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        getLoaderManager().initLoader(DETAIL_LOADER, null, this);
-        super.onActivityCreated(savedInstanceState);
     }
 
     void onLocationChanged( String newLocation ) {
@@ -184,46 +193,46 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             int weatherId = data.getInt(COL_WEATHER_CONDITION_ID);
 
             // Use weather art image
-            mIconView.setImageResource(Utility.getArtResourceForWeatherCondition(weatherId));
+            detail_icon.setImageResource(Utility.getArtResourceForWeatherCondition(weatherId));
 
             // Read date from cursor and update views for day of week and date
             long date = data.getLong(COL_WEATHER_DATE);
             String friendlyDateText = Utility.getDayName(getActivity(), date);
             String dateText = Utility.getFormattedMonthDay(getActivity(), date);
-            mFriendlyDateView.setText(friendlyDateText);
-            mDateView.setText(dateText);
+            detail_date_textview.setText(friendlyDateText);
+            detail_day_textview.setText(dateText);
 
             // Read description from cursor and update view
             String description = data.getString(COL_WEATHER_DESC);
-            mDescriptionView.setText(description);
+            detail_forecast_textview.setText(description);
 
             // For accessibility, add a content description to the icon field
-            mIconView.setContentDescription(description);
+            detail_icon.setContentDescription(description);
 
             // Read high temperature from cursor and update view
             boolean isMetric = Utility.isMetric(getActivity());
 
             double high = data.getDouble(COL_WEATHER_MAX_TEMP);
             String highString = Utility.formatTemperature(getActivity(), high, isMetric);
-            mHighTempView.setText(highString);
+            detail_high_textview.setText(highString);
 
             // Read low temperature from cursor and update view
             double low = data.getDouble(COL_WEATHER_MIN_TEMP);
             String lowString = Utility.formatTemperature(getActivity(), low, isMetric);
-            mLowTempView.setText(lowString);
+            detail_low_textview.setText(lowString);
 
             // Read humidity from cursor and update view
             float humidity = data.getFloat(COL_WEATHER_HUMIDITY);
-            mHumidityView.setText(getActivity().getString(R.string.format_humidity, humidity));
+            detail_humidity_textview.setText(getActivity().getString(R.string.format_humidity, humidity));
 
             // Read wind speed and direction from cursor and update view
             float windSpeedStr = data.getFloat(COL_WEATHER_WIND_SPEED);
             float windDirStr = data.getFloat(COL_WEATHER_DEGREES);
-            mWindView.setText(Utility.getFormattedWind(getActivity(), windSpeedStr, windDirStr));
+            detail_wind_textview.setText(Utility.getFormattedWind(getActivity(), windSpeedStr, windDirStr));
 
             // Read pressure from cursor and update view
             float pressure = data.getFloat(COL_WEATHER_PRESSURE);
-            mPressureView.setText(getActivity().getString(R.string.format_pressure, pressure));
+            detail_pressure_textview.setText(getActivity().getString(R.string.format_pressure, pressure));
 
             // We still need this for the share intent
             mForecast = String.format("%s - %s - %s/%s", dateText, description, high, low);
