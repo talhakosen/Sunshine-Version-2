@@ -33,15 +33,8 @@ public class DetailActivity extends ActionBarActivity {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
 
-            Bundle arguments = new Bundle();
-            arguments.putParcelable(DetailFragment.DETAIL_URI, getIntent().getData());
-
-            DetailFragment fragment = DetailFragment_.builder().build();
-            fragment.setArguments(arguments);
-
-
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.weather_detail_container, fragment)
+                    .add(R.id.weather_detail_container, DetailFragment_.builder().mUri(getIntent().getData()).build())
                     .commit();
         }
     }

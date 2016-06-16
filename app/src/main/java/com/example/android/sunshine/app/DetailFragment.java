@@ -37,6 +37,7 @@ import com.example.android.sunshine.app.data.WeatherContract.WeatherEntry;
 import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.FragmentArg;
 import org.androidannotations.annotations.ViewById;
 
 /**
@@ -44,6 +45,8 @@ import org.androidannotations.annotations.ViewById;
  */
 @EFragment(R.layout.fragment_detail)
 public class DetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+    @FragmentArg
+    Uri mUri;
 
     @ViewById
     ImageView detail_icon;
@@ -80,7 +83,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
     private ShareActionProvider mShareActionProvider;
     private String mForecast;
-    private Uri mUri;
 
     private static final int DETAIL_LOADER = 0;
 
@@ -125,11 +127,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
     @AfterViews
     protected void initViews() {
-        Bundle arguments = getArguments();
-        if (arguments != null) {
-            mUri = arguments.getParcelable(DetailFragment.DETAIL_URI);
-        }
-
         getLoaderManager().initLoader(DETAIL_LOADER, null, this);
     }
 
