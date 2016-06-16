@@ -22,6 +22,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -32,6 +33,14 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.android.sunshine.app.data.WeatherContract;
+import com.example.android.sunshine.app.modal.ForecastObject;
+import com.example.android.sunshine.app.net.ForecastAPI;
+import com.example.android.sunshine.app.net.ServiceGenerator;
+
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Response;
 
 /**
  * Encapsulates fetching the forecast and displaying it as a {@link ListView} layout.
@@ -170,6 +179,19 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     public void onActivityCreated(Bundle savedInstanceState) {
         getLoaderManager().initLoader(FORECAST_LOADER, null, this);
         super.onActivityCreated(savedInstanceState);
+
+        Call<List<ForecastObject>> call = ServiceGenerator.createService(ForecastAPI.class).loadWeather("34000","json","metric","7","1ca986f97558e0ff0d0e043ab018f8ba");
+        call.enqueue(new retrofit2.Callback<List<ForecastObject>>() {
+            @Override
+            public void onResponse(Call<List<ForecastObject>> call, Response<List<ForecastObject>> response) {
+                Log.d("retrofit", response.message());
+            }
+
+            @Override
+            public void onFailure(Call<List<ForecastObject>> call, Throwable t) {
+                Log.d("retrofit", t.getMessage());
+            }
+        });
     }
 
     // since we read the location when we create the loader, all we need to do is restart things
