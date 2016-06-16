@@ -37,8 +37,6 @@ import android.widget.ListView;
 import com.example.android.sunshine.app.data.WeatherContract;
 import com.example.android.sunshine.app.modal.ForecastObject;
 
-import java.util.List;
-
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -193,20 +191,18 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
     private void updateWeather() {
         String location = Utility.getPreferredLocation(getActivity());
-        /*FetchWeatherTask weatherTask = new FetchWeatherTask(getActivity());
-        weatherTask.execute(location);*/
+        FetchWeatherTask weatherTask = new FetchWeatherTask(getActivity());
+        weatherTask.execute(location);
 
-        Call<List<ForecastObject>> call = ((ForecastApplication)getActivity().getApplicationContext()).getForecastAPI().loadWeather(location,"json","metric","7");
-        call.enqueue(new retrofit2.Callback<List<ForecastObject>>() {
+        Call<ForecastObject> call = ((ForecastApplication)getActivity().getApplicationContext()).getForecastAPI().loadWeather(location,"json","metric","7");
+        call.enqueue(new retrofit2.Callback<ForecastObject>() {
             @Override
-            public void onResponse(Call<List<ForecastObject>> call, Response<List<ForecastObject>> response) {
+            public void onResponse(Call<ForecastObject> call, Response<ForecastObject> response) {
                 Log.d("retrofit", response.message());
-                for (ForecastObject forecastObject : response.body())
-                    addLocation("",forecastObject.getCity().getName(),forecastObject.getCity().getCoord().getLat(),forecastObject.getCity().getCoord().getLon());
             }
 
             @Override
-            public void onFailure(Call<List<ForecastObject>> call, Throwable t) {
+            public void onFailure(Call<ForecastObject> call, Throwable t) {
                 Log.d("retrofit", t.getMessage());
             }
         });
